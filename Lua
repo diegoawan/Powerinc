@@ -1,0 +1,81 @@
+local Players = game:GetService("Players")
+local LP = Players.LocalPlayer
+
+local AutoSell = false
+local AutoFire = false
+local AutoWater = false
+
+local SellPart = workspace.World.Stats.Sell.MoneySell.part
+local FirePart = workspace.World.Stats.FireElement.FireEl.part
+local WaterPart = workspace.World.Stats.WaterElement.WaterEl.part
+
+local function getHRP()
+    local char = LP.Character or LP.CharacterAdded:Wait()
+    return char:FindFirstChild("HumanoidRootPart")
+end
+
+local function touch(part)
+    local hrp = getHRP()
+    if hrp and part then
+        firetouchinterest(hrp, part, 0)
+        firetouchinterest(hrp, part, 1)
+    end
+end
+
+local MainTab = Window:CreateTab("Main")
+
+MainTab:CreateToggle({
+    Name = "Auto Sell",
+    CurrentValue = false,
+    Callback = function(Value)
+        AutoSell = Value
+        if Value then
+            task.spawn(function()
+                while AutoSell do
+                    pcall(function()
+                        touch(SellPart)
+                    end)
+                    task.wait()
+                end
+            end)
+        end
+    end
+})
+
+local ElementsTab = Window:CreateTab("Elements")
+
+ElementsTab:CreateToggle({
+    Name = "Auto Fire",
+    CurrentValue = false,
+    Callback = function(Value)
+        AutoFire = Value
+        if Value then
+            task.spawn(function()
+                while AutoFire do
+                    pcall(function()
+                        touch(FirePart)
+                    end)
+                    task.wait()
+                end
+            end)
+        end
+    end
+})
+
+ElementsTab:CreateToggle({
+    Name = "Auto Water",
+    CurrentValue = false,
+    Callback = function(Value)
+        AutoWater = Value
+        if Value then
+            task.spawn(function()
+                while AutoWater do
+                    pcall(function()
+                        touch(WaterPart)
+                    end)
+                    task.wait()
+                end
+            end)
+        end
+    end
+})
