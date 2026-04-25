@@ -14,12 +14,17 @@ local function getHRP()
     return char:FindFirstChild("HumanoidRootPart")
 end
 
-local function touch(part)
+local function safeTouch(part)
     local hrp = getHRP()
-    if hrp and part then
-        firetouchinterest(hrp, part, 0)
-        firetouchinterest(hrp, part, 1)
-    end
+    if not hrp or not part then return end
+
+    local oldCFrame = hrp.CFrame
+    hrp.CFrame = part.CFrame + Vector3.new(0, 3, 0)
+    task.wait()
+    firetouchinterest(hrp, part, 0)
+    firetouchinterest(hrp, part, 1)
+    task.wait()
+    hrp.CFrame = oldCFrame
 end
 
 local MainTab = Window:CreateTab("Main")
@@ -33,9 +38,9 @@ MainTab:CreateToggle({
             task.spawn(function()
                 while AutoSell do
                     pcall(function()
-                        touch(SellPart)
+                        safeTouch(SellPart)
                     end)
-                    task.wait()
+                    task.wait(0.2)
                 end
             end)
         end
@@ -53,9 +58,9 @@ ElementsTab:CreateToggle({
             task.spawn(function()
                 while AutoFire do
                     pcall(function()
-                        touch(FirePart)
+                        safeTouch(FirePart)
                     end)
-                    task.wait()
+                    task.wait(0.2)
                 end
             end)
         end
@@ -71,11 +76,12 @@ ElementsTab:CreateToggle({
             task.spawn(function()
                 while AutoWater do
                     pcall(function()
-                        touch(WaterPart)
+                        safeTouch(WaterPart)
                     end)
-                    task.wait()
+                    task.wait(0.2)
                 end
             end)
         end
     end
 })
+
