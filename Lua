@@ -1,4 +1,5 @@
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local LP = Players.LocalPlayer
 
 local AutoSell = false
@@ -14,18 +15,30 @@ local function getHRP()
     return char:FindFirstChild("HumanoidRootPart")
 end
 
-local function safeTouch(part)
+local function touch(part)
     local hrp = getHRP()
-    if not hrp or not part then return end
-
-    local oldCFrame = hrp.CFrame
-    hrp.CFrame = part.CFrame + Vector3.new(0, 3, 0)
-    task.wait()
-    firetouchinterest(hrp, part, 0)
-    firetouchinterest(hrp, part, 1)
-    task.wait()
-    hrp.CFrame = oldCFrame
+    if hrp and part then
+        firetouchinterest(hrp, part, 0)
+        firetouchinterest(hrp, part, 1)
+    end
 end
+
+local function isAnyEnabled()
+    return AutoSell or AutoFire or AutoWater
+end
+
+RunService.Stepped:Connect(function()
+    if isAnyEnabled() then
+        local char = LP.Character
+        if char then
+            for _, v in pairs(char:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.CanCollide = false
+                end
+            end
+        end
+    end
+end)
 
 local MainTab = Window:CreateTab("Main")
 
@@ -38,9 +51,9 @@ MainTab:CreateToggle({
             task.spawn(function()
                 while AutoSell do
                     pcall(function()
-                        safeTouch(SellPart)
+                        touch(SellPart)
                     end)
-                    task.wait(0.2)
+                    task.wait()
                 end
             end)
         end
@@ -58,9 +71,9 @@ ElementsTab:CreateToggle({
             task.spawn(function()
                 while AutoFire do
                     pcall(function()
-                        safeTouch(FirePart)
+                        touch(FirePart)
                     end)
-                    task.wait(0.2)
+                    task.wait()
                 end
             end)
         end
@@ -76,9 +89,9 @@ ElementsTab:CreateToggle({
             task.spawn(function()
                 while AutoWater do
                     pcall(function()
-                        safeTouch(WaterPart)
+                        touch(WaterPart)
                     end)
-                    task.wait(0.2)
+                    task.wait()
                 end
             end)
         end
