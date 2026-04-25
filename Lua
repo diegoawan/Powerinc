@@ -5,14 +5,18 @@ local LP = Players.LocalPlayer
 local AutoSell = false
 local AutoFire = false
 local AutoWater = false
+local Noclip = false
 
 local SellPart = workspace.World.Stats.Sell.MoneySell.part
 local FirePart = workspace.World.Stats.FireElement.FireEl.part
 local WaterPart = workspace.World.Stats.WaterElement.WaterEl.part
 
+local function getChar()
+    return LP.Character or LP.CharacterAdded:Wait()
+end
+
 local function getHRP()
-    local char = LP.Character or LP.CharacterAdded:Wait()
-    return char:FindFirstChild("HumanoidRootPart")
+    return getChar():FindFirstChild("HumanoidRootPart")
 end
 
 local function touch(part)
@@ -23,18 +27,13 @@ local function touch(part)
     end
 end
 
-local function isAnyEnabled()
-    return AutoSell or AutoFire or AutoWater
-end
-
+-- Noclip loop
 RunService.Stepped:Connect(function()
-    if isAnyEnabled() then
-        local char = LP.Character
-        if char then
-            for _, v in pairs(char:GetDescendants()) do
-                if v:IsA("BasePart") then
-                    v.CanCollide = false
-                end
+    if Noclip then
+        local char = getChar()
+        for _, v in pairs(char:GetDescendants()) do
+            if v:IsA("BasePart") and v.CanCollide then
+                v.CanCollide = false
             end
         end
     end
@@ -57,6 +56,15 @@ MainTab:CreateToggle({
                 end
             end)
         end
+    end
+})
+
+-- ✅ Noclip toggle added here
+MainTab:CreateToggle({
+    Name = "Noclip (Important)",
+    CurrentValue = false,
+    Callback = function(Value)
+        Noclip = Value
     end
 })
 
@@ -97,4 +105,3 @@ ElementsTab:CreateToggle({
         end
     end
 })
-
