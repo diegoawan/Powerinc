@@ -7,7 +7,15 @@ local AutoFire = false
 local AutoWater = false
 local Noclip = false
 
-local SellPart = workspace.World.Stats.Sell:GetChildren()[4].part
+local sellContainer = workspace.World.Stats.Sell:GetChildren()[4]
+local SellPart = nil
+if sellContainer then
+    local part = sellContainer:FindFirstChild("part")
+    if part then
+        SellPart = part:FindFirstChildOfClass("TouchInterest") or part
+    end
+end
+
 local FirePart = workspace.World.Stats.FireElement.FireEl.part
 local WaterPart = workspace.World.Stats.WaterElement.WaterEl.part
 
@@ -19,15 +27,6 @@ local function getHRP()
     return getChar():FindFirstChild("HumanoidRootPart")
 end
 
-local function touch(part)
-    local hrp = getHRP()
-    if hrp and part then
-        firetouchinterest(hrp, part, 0)
-        firetouchinterest(hrp, part, 1)
-    end
-end
-
--- Noclip loop
 RunService.Stepped:Connect(function()
     if Noclip then
         local char = getChar()
@@ -40,18 +39,24 @@ RunService.Stepped:Connect(function()
 end)
 
 local MainTab = Window:CreateTab("Main")
+local ElementsTab = Window:CreateTab("Elements")
 
 MainTab:CreateToggle({
-    Name = "Auto Sell",
+    Name = "Auto Sell (8x)",
     CurrentValue = false,
     Callback = function(Value)
         AutoSell = Value
         if Value then
             task.spawn(function()
                 while AutoSell do
-                    pcall(function()
-                        touch(SellPart)
-                    end)
+                    local hrp = getHRP()
+                    if hrp and SellPart then
+                        for _ = 1, 8 do
+                            firetouchinterest(hrp, SellPart, 0)
+                            firetouchinterest(hrp, SellPart, 1)
+                            task.wait(0.02)
+                        end
+                    end
                     task.wait()
                 end
             end)
@@ -59,7 +64,6 @@ MainTab:CreateToggle({
     end
 })
 
--- ✅ Noclip toggle added here
 MainTab:CreateToggle({
     Name = "Noclip (Important)",
     CurrentValue = false,
@@ -67,8 +71,6 @@ MainTab:CreateToggle({
         Noclip = Value
     end
 })
-
-local ElementsTab = Window:CreateTab("Elements")
 
 ElementsTab:CreateToggle({
     Name = "Auto Fire",
@@ -78,9 +80,11 @@ ElementsTab:CreateToggle({
         if Value then
             task.spawn(function()
                 while AutoFire do
-                    pcall(function()
-                        touch(FirePart)
-                    end)
+                    local hrp = getHRP()
+                    if hrp and FirePart then
+                        firetouchinterest(hrp, FirePart, 0)
+                        firetouchinterest(hrp, FirePart, 1)
+                    end
                     task.wait()
                 end
             end)
@@ -96,9 +100,11 @@ ElementsTab:CreateToggle({
         if Value then
             task.spawn(function()
                 while AutoWater do
-                    pcall(function()
-                        touch(WaterPart)
-                    end)
+                    local hrp = getHRP()
+                    if hrp and WaterPart then
+                        firetouchinterest(hrp, WaterPart, 0)
+                        firetouchinterest(hrp, WaterPart, 1)
+                    end
                     task.wait()
                 end
             end)
