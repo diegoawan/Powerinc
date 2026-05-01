@@ -7,7 +7,7 @@ local AutoFire = false
 local AutoWater = false
 local Noclip = false
 
-local SellPart = workspace.World.Stats.Sell.MoneySell.part
+local SellPart = workspace.World.Stats.Sell:GetChildren()[4].part
 local FirePart = workspace.World.Stats.FireElement.FireEl.part
 local WaterPart = workspace.World.Stats.WaterElement.WaterEl.part
 
