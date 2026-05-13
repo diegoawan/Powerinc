@@ -9,24 +9,26 @@ local AutoWater = false
 local AutoEarth = false
 local Noclip = false
 
-local SellTouch = workspace.World.Stats.Sell:GetChildren()[4].part.TouchInterest
+local SellPart = workspace.World.Stats.Sell:GetChildren()[4].part
 local FirePart = workspace.World.Stats.FireElement.FireEl.part
 local WaterPart = workspace.World.Stats.WaterElement.WaterEl.part
-local EarthTouch = workspace.World.Stats.EarthElement.EarthEl.part.TouchInterest
+local EarthPart = workspace.World.Stats.EarthElement.EarthEl.part
 
 local function getChar()
     return LP.Character or LP.CharacterAdded:Wait()
 end
 
 local function getHRP()
-    return getChar():FindFirstChild("HumanoidRootPart")
+    local char = getChar()
+    return char and char:FindFirstChild("HumanoidRootPart")
 end
 
 RunService.Stepped:Connect(function()
     if Noclip then
         local char = getChar()
+
         for _, v in pairs(char:GetDescendants()) do
-            if v:IsA("BasePart") and v.CanCollide then
+            if v:IsA("BasePart") then
                 v.CanCollide = false
             end
         end
@@ -41,17 +43,20 @@ MainTab:CreateToggle({
     CurrentValue = false,
     Callback = function(Value)
         AutoSell = Value
+
         if Value then
             task.spawn(function()
                 while AutoSell do
                     local hrp = getHRP()
-                    if hrp and SellTouch then
+
+                    if hrp and SellPart then
                         for _ = 1, 16 do
-                            firetouchinterest(hrp, SellTouch, 0)
-                            firetouchinterest(hrp, SellTouch, 1)
+                            firetouchinterest(hrp, SellPart, 0)
+                            firetouchinterest(hrp, SellPart, 1)
                             task.wait(0.02)
                         end
                     end
+
                     task.wait()
                 end
             end)
@@ -72,14 +77,17 @@ ElementsTab:CreateToggle({
     CurrentValue = false,
     Callback = function(Value)
         AutoFire = Value
+
         if Value then
             task.spawn(function()
                 while AutoFire do
                     local hrp = getHRP()
+
                     if hrp and FirePart then
                         firetouchinterest(hrp, FirePart, 0)
                         firetouchinterest(hrp, FirePart, 1)
                     end
+
                     task.wait()
                 end
             end)
@@ -92,14 +100,17 @@ ElementsTab:CreateToggle({
     CurrentValue = false,
     Callback = function(Value)
         AutoWater = Value
+
         if Value then
             task.spawn(function()
                 while AutoWater do
                     local hrp = getHRP()
+
                     if hrp and WaterPart then
                         firetouchinterest(hrp, WaterPart, 0)
                         firetouchinterest(hrp, WaterPart, 1)
                     end
+
                     task.wait()
                 end
             end)
@@ -112,14 +123,17 @@ ElementsTab:CreateToggle({
     CurrentValue = false,
     Callback = function(Value)
         AutoEarth = Value
+
         if Value then
             task.spawn(function()
                 while AutoEarth do
                     local hrp = getHRP()
-                    if hrp and EarthTouch then
-                        firetouchinterest(hrp, EarthTouch, 0)
-                        firetouchinterest(hrp, EarthTouch, 1)
+
+                    if hrp and EarthPart then
+                        firetouchinterest(hrp, EarthPart, 0)
+                        firetouchinterest(hrp, EarthPart, 1)
                     end
+
                     task.wait()
                 end
             end)
